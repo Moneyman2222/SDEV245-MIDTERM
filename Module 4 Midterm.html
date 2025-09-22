@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Secure Message Handler</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.2.0/crypto-js.min.js"></script>
+    <style>
+        body { font-family: sans-serif; margin: 20px; }
+        textarea { width: 100%; height: 100px; margin-bottom: 10px; }
+        button { margin-right: 10px; }
+        #output { margin-top: 20px; border: 1px solid #ccc; padding: 10px; min-height: 50px; }
+    </style>
+</head>
+<body>
+    <h1>Secure Message Handler</h1>
+
+    <label for="messageInput">Enter your message:</label><br>
+    <textarea id="messageInput"></textarea><br>
+
+    <label for="encryptionKey">Encryption Key (AES):</label><br>
+    <input type="text" id="encryptionKey" value="mySecretKey123" style="width: 300px;"><br><br>
+
+    <button onclick="encryptAndHash()">Encrypt & Hash</button>
+    <button onclick="decryptAndVerify()">Decrypt & Verify</button>
+
+    <h2>Output:</h2>
+    <div id="output"></div>
+
+    <script>
+        let encryptedData = null;
+        let originalHash = null;
+
+        function encryptAndHash() {
+            const message = document.getElementById('messageInput').value;
+            const key = document.getElementById('encryptionKey').value;
+
+            if (!message || !key) {
+                document.getElementById('output').innerText = "Please enter a message and an encryption key.";
+                return;
+            }
+
+            originalHash = CryptoJS.SHA256(message).toString();
+
+            encryptedData = CryptoJS.AES.encrypt(message, key).toString();
+
+            document.getElementById('output').innerText = `Message encrypted and hashed!\nEncrypted Data: ${encryptedData}\nOriginal Hash: ${originalHash}`;
+        }
+
+        function decryptAndVerify() {
+            const key = document.getElementById('encryptionKey').value;
+
+            if (!encryptedData || !originalHash) {
+                document.getElementById('output').innerText = "Please encrypt a message first.";
+                return;
+            }
+            if (!key) {
+                document.getElementById('output').innerText = "Please enter the encryption key.";
+                return;
+            }
+
+            try {
+                const decryptedBytes = CryptoJS.AES.decrypt(encryptedData, key);
+                const decryptedMessage = decryptedBytes.toString(CryptoJS.enc.Utf8);
+
+                const newHash = CryptoJS.SHA256(decryptedMessage).toString();
+
+                if (newHash === originalHash) {
+                    document.getElementById('output').innerText = `Decryption successful and integrity verified!\nDecrypted Message: ${decryptedMessage}`;
+                } else {
+                    document.getElementById('output').innerText = `Decryption successful, but integrity check failed!\nDecrypted Message: ${decryptedMessage}\nNew Hash: ${newHash}\nOriginal Hash: ${originalHash}`;
+                }
+            } catch (e) {
+                document.getElementById('output').innerText = `Decryption failed. Please check the encryption key. Error: ${e.message}`;
+            }
+        }
+    </script>
+</body>
+</html>
