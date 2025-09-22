@@ -14,4 +14,4 @@ with confidentiallity the only person to know what the code changed to is only t
 with integrity the code does not get sent out to other systems meaning the code has less places to potentially fail and causing the code to leak,
 with availibility the code is availibe to anyone who downloads it so no one is left out of using the code.
 
-The code's entropy is from the hash table process and from the key used by defult or given by the user if they have a special key only they know about. 
+The code's entropy is from the hash table process and from the key used by defult or given by the user if they have a special key only they know about.
